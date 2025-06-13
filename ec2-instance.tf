@@ -1,24 +1,8 @@
 
 
-# Get latest Ubuntu AMI
-data "aws_ami" "ubuntu" {
-  most_recent = true
-  owners      = ["099720109477"] # Canonical
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/*amd64*"]
-  }
-
-  filter {
-    name   = "state"
-    values = ["available"]
-  }
-}
-
 # Upload SSH key
 resource "aws_key_pair" "deploy" {
-  key_name   = "terraform-publickey"
+  key_name   = "terraform-publickey-new-1-1-1-1"
   public_key = file("terraform-publickey.pub")
 }
 
@@ -27,7 +11,7 @@ resource "aws_default_vpc" "default" {}
 
 # Security group: allow SSH, HTTP, HTTPS
 resource "aws_security_group" "allow_user_to_connect" {
-  name        = "allow"
+  name        = "allow-new-1-1-1"
   description = "Allow SSH and Web access"
   vpc_id      = aws_default_vpc.default.id
 
@@ -66,14 +50,14 @@ resource "aws_security_group" "allow_user_to_connect" {
 
 # Create EC2 instance
 resource "aws_instance" "ec2_instance" {
-  ami           = data.aws_ami.ubuntu.id
-  instance_type = "t2.micro"
+  ami           = var.ami_id
+  instance_type = var.instance_type
   key_name      = aws_key_pair.deploy.key_name
 
   security_groups = [aws_security_group.allow_user_to_connect.name]
 
   root_block_device {
-    volume_size = 30
+    volume_size =  var.volume_size
     volume_type = "gp3"
   }
 
@@ -81,3 +65,4 @@ resource "aws_instance" "ec2_instance" {
     Name = "ZASIM-EC2-Instance"
   }
 }
+
