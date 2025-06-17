@@ -1,7 +1,7 @@
 
 
 resource "aws_s3_bucket" "bucket" {
-  bucket = "zasem-tf-s3-buckets" # MUST be globally unique
+  bucket = "zasem-tf-s3-buckets" # MUST be globally unique  
   force_destroy = true
 
   tags = {
